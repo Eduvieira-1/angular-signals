@@ -1,5 +1,5 @@
 import { openEditCourseDialog } from './../edit-course-dialog/edit-course-dialog.component';
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Course } from '../models/course.model';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,7 +12,12 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrl: './courses-card-list.component.scss',
 })
 export class CoursesCardListComponent {
+
   courses = input.required<Course[]>();
+
+  courseUpdated = output<Course>();
+
+  courseDeleted = output<string>();
 
   dialog = inject(MatDialog);
 
@@ -26,5 +31,11 @@ export class CoursesCardListComponent {
         course
       }
       )
+
+      this.courseUpdated.emit(newCourse);
+  }
+
+  onCourseDeleted(course: Course) {
+    this.courseDeleted.emit(course.id);
   }
 }
