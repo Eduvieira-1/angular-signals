@@ -1,3 +1,4 @@
+import { LoadingService } from './../loading/loading.service';
 import { Component, signal, inject, computed, effect } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTab, MatTabGroup } from '@angular/material/tabs';
@@ -30,6 +31,8 @@ export class HomeComponent {
     return courses.filter((courses) => courses.category === 'ADVANCED');
   });
 
+  loadingService = inject(LoadingService);
+
   constructor() {
     effect(() => {
       console.log('beginner courses: ', this.beginnerCourses());
@@ -43,11 +46,14 @@ export class HomeComponent {
 
   async loadCourses() {
     try {
+      this.loadingService.loadingOn()
       const courses = await this.coursesService.loadAllCourses();
       this.#courses.set(courses.sort(sortCoursesBySeqNo));
     } catch (err) {
       alert('Error loading courses!');
       console.error(err);
+    }finally{
+      this.loadingService.loadingOff()
     }
   }
 
