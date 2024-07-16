@@ -1,3 +1,4 @@
+import { MessagesService } from './../messages/messages.service';
 import { LoadingService } from './../loading/loading.service';
 import { Component, signal, inject, computed, effect } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -32,6 +33,7 @@ export class HomeComponent {
   });
 
   loadingService = inject(LoadingService);
+  messageService = inject(MessagesService);
 
   constructor() {
     effect(() => {
@@ -50,7 +52,10 @@ export class HomeComponent {
       const courses = await this.coursesService.loadAllCourses();
       this.#courses.set(courses.sort(sortCoursesBySeqNo));
     } catch (err) {
-      alert('Error loading courses!');
+      this.messageService.showMessage(
+        'Error loading courses',
+         "error"
+      );
       console.error(err);
     }finally{
       this.loadingService.loadingOff()
