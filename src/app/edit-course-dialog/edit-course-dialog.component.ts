@@ -1,3 +1,5 @@
+import { CourseCategory } from './../models/course-category.model';
+import { signal, effect } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { Component, inject } from '@angular/core';
@@ -42,12 +44,19 @@ export class EditCourseDialogComponent {
 
   courseService = inject(CoursesService);
 
+  category = signal<CourseCategory>("BEGINNER");
+
   constructor(){
     this.form.patchValue({
       title: this.data?.course?.title,
       longDescription: this.data?.course?.longDescription,
-      category: this.data?.course?.category,
       iconUrl: this.data?.course?.iconUrl
+    })
+
+    this.category.set(this.data?.course?.category ?? "BEGINNER");
+
+    effect(() => {
+      console.log('...', this.category());
     })
   }
 
@@ -57,6 +66,7 @@ export class EditCourseDialogComponent {
 
   async onSave(){
     const courseProps = this.form.value as Partial<Course>;
+    courseProps.category = this.category();
     if(this.data?.mode === "update"){
       await this.saveCourse(this.data?.course!.id, courseProps);
     }
